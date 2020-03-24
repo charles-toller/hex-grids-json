@@ -1,12 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
-    "declaration": true,
-    "outDir": "lib"
-  },
-  "exclude": [
-    "node_modules",
-    "lib"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "declaration": true,
+        "outDir": "lib",
+        "strict": true,
+        "noImplicitAny": false
+    },
+    "exclude": ["node_modules", "lib"]
 }
