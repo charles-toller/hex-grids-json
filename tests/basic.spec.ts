@@ -97,3 +97,21 @@ test("iterateAllTiles", () => {
         },
     });
 });
+test("modify", () => {
+    let state: any = hexGridsReducer();
+    const getState = () => state;
+    const actionHandler = (action) => (state = hexGridsReducer(state, action));
+    const grid = new HexGrid<{ color: string }>(getState, actionHandler, {
+        color: "white",
+    });
+    grid.getHex(0, 0);
+    const m = grid.modify();
+    m.getHex(0, 0).color = "blue";
+    const result = m.build();
+    expect(state.hexes[0][0]).toMatchObject({
+        color: "white",
+    });
+    expect(result.hexes[0][0]).toMatchObject({
+        color: "blue",
+    });
+});

@@ -83,6 +83,9 @@ export function hexGridsReducer(
     }
     return state;
 }
+interface Modify<T> {
+    build(): HexState<T>;
+}
 export default class HexGrid<T extends {}> {
     private readonly stateRetriever: () => HexState<T>;
     private readonly actionEmitter: (
@@ -111,6 +114,35 @@ export default class HexGrid<T extends {}> {
         };
         this.actionEmitter = actionEmitter;
         this.defaultHex = defaultHex;
+    }
+    modify(): HexGrid<T> & Modify<T> {
+        let built = false;
+        let cachedState = this.stateRetriever();
+        const actionEmitter = (
+            action: SetAction | DeleteAction | CreateHexAction
+        ) => {
+            if (!built) {
+                cachedState = hexGridsReducer(cachedState, action);
+            } else {
+                throw new Error(
+                    "Cannot modify a HexGrid.modify() object after it has been built"
+                );
+            }
+        };
+        const grid = new HexGrid<T>(
+            () => cachedState,
+            actionEmitter,
+            this.defaultHex
+        );
+        Object.defineProperty(grid, "build", {
+            value: () => {
+                built = true;
+                return cachedState;
+            },
+            writable: false,
+            configurable: false,
+        });
+        return grid as HexGrid<T> & Modify<T>;
     }
     getTessellationMatching(
         u: number,
@@ -231,20 +263,20 @@ export default class HexGrid<T extends {}> {
                         p
                     );
                 },
-                getPrototypeOf: (target: Hex<T>): object | null => {
+                getPrototypeOf: (): object | null => {
                     return Object.getPrototypeOf(
                         this.stateRetriever().hexes[u][v]
                     );
                 },
-                setPrototypeOf: (target: Hex<T>, v: any): boolean => {
+                setPrototypeOf: (): boolean => {
                     return false;
                 },
-                isExtensible: (target: Hex<T>): boolean => {
+                isExtensible: (): boolean => {
                     return Object.isExtensible(
                         this.stateRetriever().hexes[u][v]
                     );
                 },
-                preventExtensions: (target: Hex<T>): boolean => {
+                preventExtensions: (): boolean => {
                     Object.preventExtensions(this.stateRetriever().hexes[u][v]);
                     return true;
                 },
