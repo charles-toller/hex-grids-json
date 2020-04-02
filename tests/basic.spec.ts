@@ -105,7 +105,7 @@ test("modify", () => {
         color: "white",
     });
     grid.getHex(0, 0);
-    const m = grid.modify();
+    const m = grid.modify(state);
     m.getHex(0, 0).color = "blue";
     const result = m.build();
     expect(state.hexes[0][0]).toMatchObject({

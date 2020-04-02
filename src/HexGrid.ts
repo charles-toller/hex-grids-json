@@ -115,9 +115,9 @@ export default class HexGrid<T extends {}> {
         this.actionEmitter = actionEmitter;
         this.defaultHex = defaultHex;
     }
-    modify(): HexGrid<T> & Modify<T> {
+    modify(state: HexState<T>): HexGrid<T> & Modify<T> {
         let built = false;
-        let cachedState = this.stateRetriever();
+        let cachedState = state;
         const actionEmitter = (
             action: SetAction | DeleteAction | CreateHexAction
         ) => {
